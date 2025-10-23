@@ -13,7 +13,6 @@ import java.util.List;
 @RestController
 public class CategoryController {
 
-    // possible
     private CategoryService categoryService;
 
     public CategoryController(CategoryService categoryService) {
