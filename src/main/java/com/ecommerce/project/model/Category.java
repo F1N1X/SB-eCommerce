@@ -1,16 +1,19 @@
 package com.ecommerce.project.model;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import org.springframework.data.annotation.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
+@Entity(name = "categories")
 public class Category {
-
+    @Id
     private Long categoryId;
     private String categoryName;
 
     public Category(String categoryName) {
         this.categoryName = categoryName;
+    }
+
+    public Category() {
     }
 
     public Long getCategoryId() {
