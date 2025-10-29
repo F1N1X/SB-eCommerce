@@ -1,14 +1,11 @@
 package com.ecommerce.project.service;
 
 import com.ecommerce.project.exceptions.APIException;
-import com.ecommerce.project.exceptions.MyGlobalExceptionHandler;
 import com.ecommerce.project.exceptions.ResourceNotFoundException;
 import com.ecommerce.project.model.Category;
 import com.ecommerce.project.repositories.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -17,8 +14,6 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Autowired
     private CategoryRepository categoryRepository;
-    @Autowired
-    MyGlobalExceptionHandler myGlobalExceptionHandler;
 
     @Override
     public List<Category> getAllCategories() {
@@ -28,7 +23,6 @@ public class CategoryServiceImpl implements CategoryService {
         }
         return categories;
     }
-
     @Override
     public void createCategory(Category category) {
         Category savedCategory = categoryRepository.findByCategoryName(category.getCategoryName());
