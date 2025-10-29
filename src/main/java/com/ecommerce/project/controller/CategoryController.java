@@ -26,10 +26,10 @@ public class CategoryController {
         return new ResponseEntity<>(allCategories,HttpStatus.OK);
     }
 
-    @PostMapping("/admin/categories/create")
+    @PostMapping("/admin/create")
     public ResponseEntity<String> createCategory(@RequestBody Category category) {
         categoryService.createCategory(category);
-        return new ResponseEntity<>("New Categorie created",HttpStatus.CREATED);
+        return new ResponseEntity<>("New Category created",HttpStatus.CREATED);
     }
 
     @DeleteMapping("/admin/categories/{categoryId}")
