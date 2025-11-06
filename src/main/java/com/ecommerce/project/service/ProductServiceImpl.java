@@ -9,7 +9,6 @@ import com.ecommerce.project.repositories.ProductRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 
@@ -22,6 +21,8 @@ public class ProductServiceImpl implements ProductService {
     private CategoryRepository categoryRepository;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private ProductService productService;
 
     @Override
     public ProductDTO addProduct(Long categoryId, Product product) {
@@ -76,5 +77,19 @@ public class ProductServiceImpl implements ProductService {
         return productResponse;
     }
 
+    @Override
+    public ProductDTO updateProduct(Long productId, Product product) {
+        Product productFromDB = productRepository
+                .findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
+        productFromDB.setProductName(product.getProductName());
+        productFromDB.setPrice(product.getPrice());
+        productFromDB.setDescription(product.getDescription());
+        productFromDB.setQuantity(product.getQuantity());
+        productFromDB.setDiscount(product.getDiscount());
+        productFromDB.setSpecialPrice(product.getSpecialPrice());
 
+        productRepository.save(productFromDB);
+        return modelMapper.map(productFromDB, ProductDTO.class);
+    }
 }
