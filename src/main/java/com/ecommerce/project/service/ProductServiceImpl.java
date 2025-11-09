@@ -125,13 +125,13 @@ public class ProductServiceImpl implements ProductService {
 
     private String uploadImage(String path, MultipartFile file) throws IOException {
         // File names of current / original file
-        String originalFilename = file.getName();
+        String originalFilename = file.getOriginalFilename();
 
         // Generate a unique file name
         String randomId = UUID.randomUUID().toString();
         // tes.jpg --> 1234 --> 1234.jpg
         String fileName = randomId.concat(originalFilename.substring(originalFilename.lastIndexOf(".")));
-        String filePath = path + File.pathSeparator + fileName;
+        String filePath = path + File.separator + fileName;
         // Check if path exist and create
         File folder = new File(path);
         if (!folder.exists())
