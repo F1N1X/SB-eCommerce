@@ -1,6 +1,6 @@
 # 🛍️ SB-eCommerce
 
-> 🚧 **Status:** Under active development – core features implemented, new modules coming soon.
+> 🚧 **Status:** Under active development - new modules coming soon.
 
 ## 📖 Overview
 **SB-eCommerce** is a RESTful backend application built with **Spring Boot**, designed to manage products, users, authentication, and orders for an eCommerce platform.  
