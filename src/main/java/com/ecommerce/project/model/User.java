@@ -24,6 +24,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long userId;
+
     @NotBlank
     @Size(max = 20)
     @Column(name = "username")
@@ -55,5 +56,10 @@ public class User {
     joinColumns = @JoinColumn(name = "user_id"),
     inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
+
+
+    @OneToMany(mappedBy = "user",cascade = {CascadeType.PERSIST,CascadeType.MERGE},
+    orphanRemoval = true,fetch = FetchType.EAGER)
+    private Set<Product> products;
 
 }
