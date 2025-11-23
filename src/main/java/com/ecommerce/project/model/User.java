@@ -60,10 +60,13 @@ public class User {
     private Set<Role> roles = new HashSet<>();
 
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "user",cascade = {CascadeType.PERSIST,CascadeType.MERGE},
     orphanRemoval = true,fetch = FetchType.EAGER)
     private Set<Product> products;
 
+    @Getter
+    @Setter
     @ManyToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
     @JoinTable(name = "user_address",
     joinColumns = @JoinColumn(name = "user_id"),
