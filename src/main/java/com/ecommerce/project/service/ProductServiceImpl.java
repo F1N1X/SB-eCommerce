@@ -30,8 +30,7 @@ public class ProductServiceImpl implements ProductService {
     private CategoryRepository categoryRepository;
     @Autowired
     private ModelMapper modelMapper;
-    @Autowired
-    private ProductService productService;
+
     @Autowired
     private FileService fileService;
 
