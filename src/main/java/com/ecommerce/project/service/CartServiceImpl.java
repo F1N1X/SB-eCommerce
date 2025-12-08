@@ -150,13 +150,24 @@ public class CartServiceImpl implements CartService{
         CartItem cartItem = cartItemRepository.findCartItemByProductIdAndCartId(cartId, productId);
         if (cartItem == null)
             throw new APIException("Product" + product.getProductName() + "not available in the Cart");
-        cartItem.setProductPrice(product.getSpecialPrice());
-        cartItem.setQuantity(cartItem.getQuantity() + quantity);
-        cartItem.setDiscount(product.getDiscount());
-        cart.setTotalPrice(cart.getTotalPrice() + (cartItem.getProductPrice() * quantity));
-        cartRepository.save(cart);
-        CartItem updatedItem = cartItemRepository.save(cartItem);
 
+        int newQuantity = cartItem.getQuantity() + quantity;
+
+        if (newQuantity < 0)
+            throw new APIException("Result of quantity cannot be negative");
+
+        if (newQuantity == 0)
+            deleteProductFromCart(cartId, productId);
+
+        else {
+            cartItem.setProductPrice(product.getSpecialPrice());
+            cartItem.setQuantity(cartItem.getQuantity() + quantity);
+            cartItem.setDiscount(product.getDiscount());
+            cart.setTotalPrice(cart.getTotalPrice() + (cartItem.getProductPrice() * quantity));
+            cartRepository.save(cart);
+        }
+
+        CartItem updatedItem = cartItemRepository.save(cartItem);
         if (updatedItem.getQuantity() == 0)
             cartItemRepository.deleteById(updatedItem.getCartItemId());
 
