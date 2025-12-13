@@ -26,7 +26,7 @@ public class AddressServiceImpl implements AddressService{
         addressList.add(address);
 
         user.setAddresses(addressList);
-        address.setUsers(user);
+        address.setUser(user);
         Address savedAddress = addressRepository.save(address);
 
 

@@ -48,7 +48,7 @@ public class Address {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User users;
+    private User user;
 
     public Address(String street, String buildingName, String city, String state, String country, String zipCode) {
         this.street = street;
