@@ -18,4 +18,6 @@ public interface AddressService {
     List<AddressDTO> getAddressesByUser(User user);
 
     AddressDTO updateAddress(Long id, @Valid AddressDTO addressDTO);
+
+    String deleteAddress(Long id);
 }
