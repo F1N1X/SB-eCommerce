@@ -2,6 +2,7 @@ package com.ecommerce.project.service;
 
 import com.ecommerce.project.model.User;
 import com.ecommerce.project.payload.AddressDTO;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,4 +16,6 @@ public interface AddressService {
     AddressDTO getAddressesById(Long id);
 
     List<AddressDTO> getAddressesByUser(User user);
+
+    AddressDTO updateAddress(Long id, @Valid AddressDTO addressDTO);
 }
