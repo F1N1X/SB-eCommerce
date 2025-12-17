@@ -30,8 +30,8 @@ public class Payment {
     private String rpResponseMessage;
     private String pgName;
 
-    public Payment(Long paymentId, String pgPaymentId, String rpResponseMessage, String pgName, String pgStatus) {
-        this.paymentId = paymentId;
+    public Payment(String paymentMethod, String pgPaymentId, String rpResponseMessage, String pgName, String pgStatus) {
+        this.paymentMethod = paymentMethod;
         this.pgPaymentId = pgPaymentId;
         this.pgName = pgName;
         this.pgStatus = pgStatus;
