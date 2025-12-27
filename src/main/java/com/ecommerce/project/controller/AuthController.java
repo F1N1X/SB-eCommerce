@@ -11,6 +11,9 @@ import com.ecommerce.project.security.request.SignUpRequest;
 import com.ecommerce.project.security.response.MessageResponse;
 import com.ecommerce.project.security.response.UserInfoResponse;
 import com.ecommerce.project.security.services.UserDetailsImpl;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -28,6 +31,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
+@Tag(
+        name = "Authentication",
+        description = "Endpoints for user authentication, registration, and session management"
+)
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -47,6 +54,10 @@ public class AuthController {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Operation(
+            summary = "Authenticate user",
+            description = "Authenticates a user using username and password and returns a JWT token"
+    )
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(
             @RequestBody LoginRequest loginRequest) {
@@ -77,6 +88,10 @@ public class AuthController {
                 .body(response);
     }
 
+    @Operation(
+            summary = "Register a new user",
+            description = "Registers a new user account with the specified roles"
+    )
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
         if (userRepository.existsByUserName(signUpRequest.getUsername())) {
@@ -127,6 +142,11 @@ public class AuthController {
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
 
+    @Operation(
+            summary = "Get current username",
+            description = "Returns the username of the authenticated user"
+    )
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/username")
     public String currentUserName(Authentication authentication) {
         if (authentication != null)
@@ -135,6 +155,11 @@ public class AuthController {
             return "";
     }
 
+    @Operation(
+            summary = "Get current user details",
+            description = "Returns user information and roles for the authenticated user"
+    )
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/user")
     public ResponseEntity<?> getUserDetails(Authentication authentication) {
 
@@ -146,6 +171,10 @@ public class AuthController {
         return ResponseEntity.ok().body(response);
     }
 
+    @Operation(
+            summary = "Sign out user",
+            description = "Logs out the current user and clears the JWT cookie"
+    )
     @PostMapping("/signout")
     public ResponseEntity<?> signOutUser() {
         ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
