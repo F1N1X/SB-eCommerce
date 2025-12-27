@@ -5,6 +5,7 @@ import com.ecommerce.project.payload.ProductDTO;
 import com.ecommerce.project.payload.ProductResponse;
 import com.ecommerce.project.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -42,8 +43,13 @@ public class ProductController {
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/admin/categories/{categoryId}/product")
     public ResponseEntity<ProductDTO> addProduct(
-            @Valid @RequestBody ProductDTO productDTO,
-            @PathVariable Long categoryId) {
+            @Parameter(
+                    description = "Unique identifier of the category the product belongs to",
+                    example = "3"
+            )
+            @PathVariable Long categoryId,
+
+            @Valid @RequestBody ProductDTO productDTO) {
 
         ProductDTO savedProductDTO = productService.addProduct(categoryId, productDTO);
         return new ResponseEntity<>(savedProductDTO, HttpStatus.CREATED);
@@ -60,7 +66,12 @@ public class ProductController {
     @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/admin/products/{productId}")
     public ResponseEntity<ProductDTO> updateProduct(
+            @Parameter(
+                    description = "Unique identifier of the product to update",
+                    example = "10"
+            )
             @PathVariable Long productId,
+
             @Valid @RequestBody ProductDTO productDTO) {
 
         ProductDTO updatedProductDTO =
@@ -79,6 +90,10 @@ public class ProductController {
     @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/admin/products/{productId}")
     public ResponseEntity<ProductDTO> deleteProduct(
+            @Parameter(
+                    description = "Unique identifier of the product to delete",
+                    example = "10"
+            )
             @PathVariable Long productId) {
 
         ProductDTO deletedProduct = productService.deleteProduct(productId);
@@ -96,7 +111,16 @@ public class ProductController {
     @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/products/{productId}/image")
     public ResponseEntity<ProductDTO> updateProductImage(
+            @Parameter(
+                    description = "Unique identifier of the product",
+                    example = "10"
+            )
             @PathVariable Long productId,
+
+            @Parameter(
+                    description = "Image file to upload (JPG, PNG)",
+                    required = true
+            )
             @RequestParam("image") MultipartFile image) throws IOException {
 
         ProductDTO updatedProduct =
@@ -134,7 +158,12 @@ public class ProductController {
     })
     @GetMapping("/public/categories/{categoryId}/products")
     public ResponseEntity<ProductResponse> getProductsByCategory(
+            @Parameter(
+                    description = "Unique identifier of the category",
+                    example = "3"
+            )
             @PathVariable Long categoryId,
+
             @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
             @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
             @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_PRODUCT_BY, required = false) String sortBy,
@@ -154,7 +183,12 @@ public class ProductController {
     })
     @GetMapping("/public/products/keyword/{keyword}")
     public ResponseEntity<ProductResponse> getProductsByKeyword(
+            @Parameter(
+                    description = "Search keyword used to match product name or description",
+                    example = "laptop"
+            )
             @PathVariable String keyword,
+
             @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
             @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
             @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_PRODUCT_BY, required = false) String sortBy,

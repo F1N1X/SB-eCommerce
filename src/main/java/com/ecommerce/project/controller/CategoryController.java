@@ -5,6 +5,7 @@ import com.ecommerce.project.payload.CategoryDTO;
 import com.ecommerce.project.payload.CategoryResponse;
 import com.ecommerce.project.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -25,6 +26,8 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
+    // -------- PUBLIC --------
+
     @Operation(
             summary = "Get all categories",
             description = "Returns a paginated and sortable list of all categories"
@@ -34,10 +37,17 @@ public class CategoryController {
     })
     @GetMapping("/public/categories")
     public ResponseEntity<CategoryResponse> getAllCategories(
-            @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
-            @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageSize,
-            @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_CATEGORY_BY, required = false) String sortBy,
-            @RequestParam(name = "sortOder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder) {
+            @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false)
+            Integer pageNumber,
+
+            @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_NUMBER, required = false)
+            Integer pageSize,
+
+            @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_CATEGORY_BY, required = false)
+            String sortBy,
+
+            @RequestParam(name = "sortOder", defaultValue = AppConstants.SORT_DIR, required = false)
+            String sortOrder) {
 
         CategoryResponse allCategories =
                 categoryService.getAllCategories(pageNumber, pageSize, sortOrder, sortBy);
@@ -60,9 +70,11 @@ public class CategoryController {
         return new ResponseEntity<>(createdCategoryDTO, HttpStatus.CREATED);
     }
 
+    // -------- ADMIN --------
+
     @Operation(
             summary = "Delete category",
-            description = "Deletes a category by ID (admin access required)"
+            description = "Deletes a category by its unique identifier (admin access required)"
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Category deleted successfully"),
@@ -70,6 +82,10 @@ public class CategoryController {
     })
     @DeleteMapping("/admin/categories/{categoryId}")
     public ResponseEntity<CategoryDTO> deleteCategory(
+            @Parameter(
+                    description = "Unique identifier of the category to be deleted",
+                    example = "5"
+            )
             @PathVariable Long categoryId) {
 
         CategoryDTO categoryDTO = categoryService.deleteCategory(categoryId);
@@ -78,7 +94,7 @@ public class CategoryController {
 
     @Operation(
             summary = "Update category",
-            description = "Updates an existing category identified by its ID"
+            description = "Updates an existing category identified by its unique ID"
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Category updated successfully"),
@@ -87,6 +103,11 @@ public class CategoryController {
     @PutMapping("/public/categories/{categoryId}")
     public ResponseEntity<CategoryDTO> updateCategory(
             @Valid @RequestBody CategoryDTO categoryDTO,
+
+            @Parameter(
+                    description = "Unique identifier of the category to update",
+                    example = "5"
+            )
             @PathVariable Long categoryId) {
 
         CategoryDTO savedCategoryDTO =

@@ -5,6 +5,7 @@ import com.ecommerce.project.payload.AddressDTO;
 import com.ecommerce.project.service.AddressService;
 import com.ecommerce.project.util.AuthUtil;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -73,6 +74,7 @@ public class AddressController {
     })
     @GetMapping("/address/{id}")
     public ResponseEntity<AddressDTO> getAddressById(
+            @Parameter(description = "Unique identifier of the address", example = "12")
             @PathVariable Long id) {
 
         AddressDTO addressDTO = addressService.getAddressesById(id);
@@ -104,6 +106,7 @@ public class AddressController {
     })
     @PutMapping("/address/{id}")
     public ResponseEntity<AddressDTO> updateAddress(
+            @Parameter(description = "Unique identifier of the address to update", example = "12")
             @PathVariable Long id,
             @Valid @RequestBody AddressDTO addressDTO) {
 
@@ -121,6 +124,7 @@ public class AddressController {
     })
     @DeleteMapping("/address/{id}")
     public ResponseEntity<String> deleteAddress(
+            @Parameter(description = "Unique identifier of the address to delete", example = "12")
             @PathVariable Long id) {
 
         String status = addressService.deleteAddress(id);

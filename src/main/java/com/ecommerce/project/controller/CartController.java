@@ -6,6 +6,7 @@ import com.ecommerce.project.repositories.CartRepository;
 import com.ecommerce.project.service.CartService;
 import com.ecommerce.project.util.AuthUtil;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -45,7 +46,10 @@ public class CartController {
     })
     @PostMapping("/carts/products/{productId}/quantity/{quantity}")
     public ResponseEntity<CartDTO> addProductToCart(
+            @Parameter(description = "Unique identifier of the product to add", example = "10")
             @PathVariable Long productId,
+
+            @Parameter(description = "Quantity to add (must be a positive number)", example = "2")
             @PathVariable Integer quantity) {
 
         CartDTO cartDTO = cartService.addProductToCart(productId, quantity);
@@ -94,7 +98,13 @@ public class CartController {
     })
     @PutMapping("/cart/products/{productId}/quantity/{operation}")
     public ResponseEntity<CartDTO> updateCartProduct(
+            @Parameter(description = "Unique identifier of the product to update", example = "10")
             @PathVariable Long productId,
+
+            @Parameter(
+                    description = "Quantity operation: use 'add' to increase or 'delete' to decrease",
+                    example = "add"
+            )
             @PathVariable String operation) {
 
         CartDTO cartDTO = cartService.updateProductQuantityInCart(
@@ -114,7 +124,10 @@ public class CartController {
     })
     @DeleteMapping("/carts/{cartId}/product/{productId}")
     public ResponseEntity<String> deleteProductFromCart(
+            @Parameter(description = "Unique identifier of the cart", example = "7")
             @PathVariable Long cartId,
+
+            @Parameter(description = "Unique identifier of the product to remove", example = "10")
             @PathVariable Long productId) {
 
         String status = cartService.deleteProductFromCart(cartId, productId);

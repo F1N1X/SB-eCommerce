@@ -5,6 +5,7 @@ import com.ecommerce.project.payload.OrderRequestDTO;
 import com.ecommerce.project.service.OrderService;
 import com.ecommerce.project.util.AuthUtil;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -40,7 +41,13 @@ public class OrderController {
     })
     @PostMapping("/order/users/payments/{paymentMethod}")
     public ResponseEntity<OrderDTO> orderProducts(
+            @Parameter(
+                    description = "Payment method to use for this order (e.g., COD, CARD, PAYPAL)",
+                    example = "CARD"
+            )
             @PathVariable String paymentMethod,
+
+            @Parameter(description = "Order details including address and payment gateway information")
             @RequestBody OrderRequestDTO orderRequestDTO) {
 
         String emailId = authUtil.loggedInEmail();
