@@ -7,11 +7,12 @@ import com.ecommerce.project.util.AuthUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 
 @Tag(
         name = "Orders",
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 )
 @SecurityRequirement(name = "bearerAuth")
 @RestController
-@RequestMapping("api")
+@RequestMapping("/api")
 public class OrderController {
 
     @Autowired
@@ -28,16 +29,20 @@ public class OrderController {
     @Autowired
     private AuthUtil authUtil;
 
-
     @Operation(
             summary = "Place an order",
-            description = "Places a new order for the logged-in user using the selected payment method"
+            description = "Places a new order for the authenticated user using the selected payment method"
     )
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Order placed successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid order request or payment data"),
+            @ApiResponse(responseCode = "404", description = "Address not found")
+    })
     @PostMapping("/order/users/payments/{paymentMethod}")
     public ResponseEntity<OrderDTO> orderProducts(
             @PathVariable String paymentMethod,
-            @RequestBody OrderRequestDTO orderRequestDTO
-            ) {
+            @RequestBody OrderRequestDTO orderRequestDTO) {
+
         String emailId = authUtil.loggedInEmail();
 
         OrderDTO orderDTO = orderService.placeOrder(
@@ -48,7 +53,8 @@ public class OrderController {
                 orderRequestDTO.getPgPaymentId(),
                 orderRequestDTO.getPgStatus(),
                 orderRequestDTO.getPgResponse()
-                );
+        );
+
         return new ResponseEntity<>(orderDTO, HttpStatus.CREATED);
     }
 }

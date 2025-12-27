@@ -6,6 +6,9 @@ import com.ecommerce.project.payload.ProductResponse;
 import com.ecommerce.project.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+
 @Tag(
         name = "Products",
         description = "Public endpoints for browsing products and admin endpoints for managing products"
@@ -25,72 +29,42 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
+    // ---------- ADMIN ----------
+
     @Operation(
             summary = "Create a product",
             description = "Creates a new product under the given category (admin access required)"
     )
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Product created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid product data")
+    })
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/admin/categories/{categoryId}/product")
-    public ResponseEntity<ProductDTO> addProduct(@Valid @RequestBody ProductDTO productDTO,
-                                                 @PathVariable Long categoryId) {
-       ProductDTO savedProductDTO =  productService.addProduct(categoryId, productDTO);
-       return new ResponseEntity<>(savedProductDTO, HttpStatus.CREATED);
-    }
+    public ResponseEntity<ProductDTO> addProduct(
+            @Valid @RequestBody ProductDTO productDTO,
+            @PathVariable Long categoryId) {
 
-    @Operation(
-            summary = "Get all products",
-            description = "Returns a paginated and sortable list of products"
-    )
-    @GetMapping("/public/products")
-    public ResponseEntity<ProductResponse> getAllProducts(
-            @RequestParam(name="pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
-            @RequestParam(name="pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
-            @RequestParam(name="sortBy", defaultValue = AppConstants.SORT_PRODUCT_BY, required = false) String sortBy,
-            @RequestParam(name="sortOrder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder
-    ) {
-        ProductResponse productResponse = productService.getAllProducts(pageNumber, pageNumber, sortBy, sortOrder);
-        return new ResponseEntity<>(productResponse, HttpStatus.OK);
-    }
-
-    @Operation(
-            summary = "Get products by category",
-            description = "Returns a paginated and sortable list of products for the given category"
-    )
-    @GetMapping("/public/categories/{categoryId}/products")
-    public ResponseEntity<ProductResponse> getProductsByCategory(
-            @PathVariable Long categoryId,
-            @RequestParam(name="pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
-            @RequestParam(name="pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
-            @RequestParam(name="sortBy", defaultValue = AppConstants.SORT_PRODUCT_BY, required = false) String sortBy,
-            @RequestParam(name="sortOrder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder
-    ) {
-        ProductResponse productResponse = productService.searchByCategory(categoryId,pageNumber, pageNumber, sortBy, sortOrder);
-        return new ResponseEntity<>(productResponse, HttpStatus.OK);
-    }
-
-    @Operation(
-            summary = "Search products by keyword",
-            description = "Returns a paginated and sortable list of products matching the given keyword"
-    )
-    @GetMapping("/public/products/keyword/{keyword}")
-    public ResponseEntity<ProductResponse> getProductsByKeyword(
-            @PathVariable String keyword,
-            @RequestParam(name="pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
-            @RequestParam(name="pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
-            @RequestParam(name="sortBy", defaultValue = AppConstants.SORT_PRODUCT_BY, required = false) String sortBy,
-            @RequestParam(name="sortOrder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder) {
-        ProductResponse productResponse = productService.searchProductByKeyword(keyword,pageNumber, pageNumber, sortBy, sortOrder);
-        return new ResponseEntity<>(productResponse, HttpStatus.FOUND);
+        ProductDTO savedProductDTO = productService.addProduct(categoryId, productDTO);
+        return new ResponseEntity<>(savedProductDTO, HttpStatus.CREATED);
     }
 
     @Operation(
             summary = "Update a product",
             description = "Updates an existing product identified by its ID (admin access required)"
     )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Product updated successfully"),
+            @ApiResponse(responseCode = "404", description = "Product not found")
+    })
+    @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/admin/products/{productId}")
     public ResponseEntity<ProductDTO> updateProduct(
             @PathVariable Long productId,
             @Valid @RequestBody ProductDTO productDTO) {
-        ProductDTO updatedProductDTO = productService.updateProduct(productId,productDTO);
+
+        ProductDTO updatedProductDTO =
+                productService.updateProduct(productId, productDTO);
         return new ResponseEntity<>(updatedProductDTO, HttpStatus.OK);
     }
 
@@ -98,8 +72,15 @@ public class ProductController {
             summary = "Delete a product",
             description = "Deletes a product identified by its ID (admin access required)"
     )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Product deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Product not found")
+    })
+    @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/admin/products/{productId}")
-    public ResponseEntity<ProductDTO> deleteProduct(@PathVariable Long productId) {
+    public ResponseEntity<ProductDTO> deleteProduct(
+            @PathVariable Long productId) {
+
         ProductDTO deletedProduct = productService.deleteProduct(productId);
         return new ResponseEntity<>(deletedProduct, HttpStatus.OK);
     }
@@ -108,11 +89,79 @@ public class ProductController {
             summary = "Update product image",
             description = "Uploads and assigns an image to the product identified by its ID (admin access required)"
     )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Product image updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid image file")
+    })
+    @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/products/{productId}/image")
-    public ResponseEntity<ProductDTO> updateProductImage(@PathVariable Long productId,
-                                                         @RequestParam("image")MultipartFile image) throws IOException {
-        ProductDTO updateProduct = productService.updateProductImage(productId, image);
-        return new ResponseEntity<>(updateProduct, HttpStatus.OK);
+    public ResponseEntity<ProductDTO> updateProductImage(
+            @PathVariable Long productId,
+            @RequestParam("image") MultipartFile image) throws IOException {
+
+        ProductDTO updatedProduct =
+                productService.updateProductImage(productId, image);
+        return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
     }
 
+    // ---------- PUBLIC ----------
+
+    @Operation(
+            summary = "Get all products",
+            description = "Returns a paginated and sortable list of products"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Products retrieved successfully")
+    })
+    @GetMapping("/public/products")
+    public ResponseEntity<ProductResponse> getAllProducts(
+            @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
+            @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
+            @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_PRODUCT_BY, required = false) String sortBy,
+            @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder) {
+
+        ProductResponse productResponse =
+                productService.getAllProducts(pageNumber, pageSize, sortBy, sortOrder);
+        return new ResponseEntity<>(productResponse, HttpStatus.OK);
+    }
+
+    @Operation(
+            summary = "Get products by category",
+            description = "Returns a paginated and sortable list of products for the given category"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Products retrieved successfully")
+    })
+    @GetMapping("/public/categories/{categoryId}/products")
+    public ResponseEntity<ProductResponse> getProductsByCategory(
+            @PathVariable Long categoryId,
+            @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
+            @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
+            @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_PRODUCT_BY, required = false) String sortBy,
+            @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder) {
+
+        ProductResponse productResponse =
+                productService.searchByCategory(categoryId, pageNumber, pageSize, sortBy, sortOrder);
+        return new ResponseEntity<>(productResponse, HttpStatus.OK);
+    }
+
+    @Operation(
+            summary = "Search products by keyword",
+            description = "Returns a paginated and sortable list of products matching the given keyword"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Products retrieved successfully")
+    })
+    @GetMapping("/public/products/keyword/{keyword}")
+    public ResponseEntity<ProductResponse> getProductsByKeyword(
+            @PathVariable String keyword,
+            @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
+            @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
+            @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_PRODUCT_BY, required = false) String sortBy,
+            @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder) {
+
+        ProductResponse productResponse =
+                productService.searchProductByKeyword(keyword, pageNumber, pageSize, sortBy, sortOrder);
+        return new ResponseEntity<>(productResponse, HttpStatus.OK);
+    }
 }
