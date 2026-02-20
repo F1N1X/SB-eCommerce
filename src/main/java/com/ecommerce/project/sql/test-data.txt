@@ -1,0 +1,129 @@
+BEGIN;
+
+WITH next_category AS (
+  SELECT COALESCE(MAX(category_id),0)+1 AS category_id FROM public.categories
+),
+ins_category AS (
+  INSERT INTO public.categories (category_id, category_name)
+  SELECT category_id, 'Computer'
+  FROM next_category
+  RETURNING category_id
+),
+next_seller AS (
+  SELECT COALESCE(MAX(user_id),0)+1 AS user_id FROM public.users
+),
+ins_seller AS (
+  INSERT INTO public.users (user_id, username, email, password)
+  SELECT user_id, 'tech_seller', 'tech@example.com', 'secret'
+  FROM next_seller
+  RETURNING user_id
+),
+next_product AS (
+  SELECT COALESCE(MAX(id),0)+1 AS id FROM public.products
+)
+INSERT INTO public.products (
+  discount, price, quantity, special_price,
+  category_id, id, seller_id,
+  description, image, product_name
+)
+SELECT
+  15.0,
+  1200.0,
+  10,
+  1020.0,
+  ins_category.category_id,
+  next_product.id,
+  ins_seller.user_id,
+  'Gaming Laptop mit 16GB RAM',
+  'laptop.jpg',
+  'Gaming Laptop'
+FROM ins_category, ins_seller, next_product;
+
+COMMIT;
+
+BEGIN;
+
+WITH next_category AS (
+  SELECT COALESCE(MAX(category_id),0)+1 AS category_id FROM public.categories
+),
+ins_category AS (
+  INSERT INTO public.categories (category_id, category_name)
+  SELECT category_id, 'Smartphones'
+  FROM next_category
+  RETURNING category_id
+),
+next_seller AS (
+  SELECT COALESCE(MAX(user_id),0)+1 AS user_id FROM public.users
+),
+ins_seller AS (
+  INSERT INTO public.users (user_id, username, email, password)
+  SELECT user_id, 'mobile_shop', 'mobile@example.com', 'secret'
+  FROM next_seller
+  RETURNING user_id
+),
+next_product AS (
+  SELECT COALESCE(MAX(id),0)+1 AS id FROM public.products
+)
+INSERT INTO public.products (
+  discount, price, quantity, special_price,
+  category_id, id, seller_id,
+  description, image, product_name
+)
+SELECT
+  5.0,
+  800.0,
+  25,
+  760.0,
+  ins_category.category_id,
+  next_product.id,
+  ins_seller.user_id,
+  'Neustes 5G Smartphone',
+  'phone.jpg',
+  'SuperPhone X'
+FROM ins_category, ins_seller, next_product;
+
+COMMIT;
+
+BEGIN;
+
+WITH next_category AS (
+  SELECT COALESCE(MAX(category_id),0)+1 AS category_id FROM public.categories
+),
+ins_category AS (
+  INSERT INTO public.categories (category_id, category_name)
+  SELECT category_id, 'Audio'
+  FROM next_category
+  RETURNING category_id
+),
+next_seller AS (
+  SELECT COALESCE(MAX(user_id),0)+1 AS user_id FROM public.users
+),
+ins_seller AS (
+  INSERT INTO public.users (user_id, username, email, password)
+  SELECT user_id, 'audio_store', 'audio@example.com', 'secret'
+  FROM next_seller
+  RETURNING user_id
+),
+next_product AS (
+  SELECT COALESCE(MAX(id),0)+1 AS id FROM public.products
+)
+INSERT INTO public.products (
+  discount, price, quantity, special_price,
+  category_id, id, seller_id,
+  description, image, product_name
+)
+SELECT
+  20.0,
+  150.0,
+  40,
+  120.0,
+  ins_category.category_id,
+  next_product.id,
+  ins_seller.user_id,
+  'Noise Cancelling Kopfhörer',
+  'headphones.jpg',
+  'SilentSound Pro'
+FROM ins_category, ins_seller, next_product;
+
+COMMIT;
+
